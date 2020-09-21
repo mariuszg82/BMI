@@ -1,0 +1,143 @@
+﻿@page
+@model BMI.Models.Person
+@{
+    ViewData["Title"] = "Home page";
+}
+ 
+<div class="text-center">
+    <h1 class="display-4">BMI Index</h1>
+    @using (Html.BeginForm("Add", "Home", FormMethod.Post, new { enctype = "multipart/form-data", id = "inputForm" }))
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select class="form-control" asp-for="Gender" asp-items="Html.GetEnumSelectList<BMI.Models.Gender>()"></select>
+                @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Weight, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.Weight, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Weight, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Height, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Height, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Height, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Calculate" class="btn btn-primary" onclick="calc()" />
+            </div>
+        </div>
+    }
+</div>
+
+    <table class="table" id="personsTable">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Height)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Weight)
+            </th>
+            <th>
+                BMI index
+            </th>
+        </tr>
+
+        @foreach (var item in ViewData["Persons"] as List<BMI.Models.Person>)
+        {
+            <tr>
+                <td>
+                    @item.FirstName
+                </td>
+                <td>
+                    @item.LastName
+                </td>
+                <td>
+                    @item.Gender.ToString()
+                </td>
+                <td>
+                    @item.Height
+                </td>
+                <td>
+                    @item.Weight
+                </td>
+                <td>
+                    @{ 
+                        var res = item.Weight / (item.Height * item.Height);
+                        ViewBag.result = res.ToString("0.00");
+                    }
+                    @ViewBag.result
+                </td>
+            </tr>
+        }
+
+    </table>
+
+<script>
+    function calc() {
+        var form = document.getElementById("inputForm");
+        function handleForm(event) { event.preventDefault(); }
+        form.addEventListener('submit', handleForm);
+        var firstName = model.FirstName;
+        var lastName = model.LastName;
+        var gender = model.Gender.ToString();
+        var weight = model.weight;
+        var height = model.height;
+        var index = weight / (height * height);
+        var result = index.toFixed(2);
+        var table = document.getElementById("personsTable");
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+        var firstNameCell = row.insertCell(0);
+        var lastNameCell = row.insertCell(1);
+        var genderCell = row.insertCell(2);
+        var weightCell = row.insertCell(3);
+        var heightCell = row.insertCell(4);
+        var indexCell = row.insertCell(5);
+
+        firstNameCell.innerHTML = firstName;
+        lastNameCell.innerHTML = lastName;
+        genderCell.innerHTML = gender;
+        weightCell.innerHTML = weight;
+        heightCell.innerHTML = height;
+        indexCell.innerHTML = result;
+    }
+</script>
